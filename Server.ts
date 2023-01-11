@@ -20,12 +20,12 @@ server.use(express.static(path.join(__dirname, 'public')));
 
 
 //forward to error handler
-server.use((req, res, next) => {
+server.use((req: any, res: any, next: any) => {
     next(createError(404));
 });
 
 // error handler
-server.use((err, req, res, next) => {
+server.use((err: any, req: any, res: any, next: any) => {
     // render the error page
     res.status(err.status || 500);
     res.render('error');
