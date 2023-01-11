@@ -1,8 +1,9 @@
-const createError = require('http-errors');
-const express = require('express');
-const path = require('path');
-const cookieParser = require('cookie-parser');
-const logger = require('morgan');
+import createError from 'http-errors';
+import express from 'express';
+import path from 'path';
+import cookieParser from 'cookie-parser';
+import logger from 'morgan';
+
 
 // routes constants
 
@@ -25,7 +26,7 @@ server.use((req: any, res: any, next: any) => {
 });
 
 // error handler
-server.use((err: any, req: any, res: any, next: any) => {
+server.use((err: any, req: any, res: any) => {
     // render the error page
     res.status(err.status || 500);
     res.render('error');
