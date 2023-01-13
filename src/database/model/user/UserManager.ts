@@ -1,8 +1,6 @@
 import {PrivateUser, UserModel} from "./UserModel";
 import * as mongoose from "mongoose";
 
-
-
 export async function createUser(
     user: PrivateUser,
     onSuccess: () => void = () => {},
