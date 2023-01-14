@@ -1,5 +1,30 @@
-import {PrivateUser, UserModel} from "./UserModel";
+import {PrivateUser, User, UserModel} from "./UserModel";
 import * as mongoose from "mongoose";
+
+async function getUsersBy(query: mongoose.FilterQuery<PrivateUser>): Promise<PrivateUser[]> {
+    try {
+        return await UserModel.find(query).exec();
+    } catch (error: any) {
+        throw new Error(error);
+    }
+}
+
+async function getAllUsers(): Promise<PrivateUser[]> {
+    return await getUsersBy({});
+}
+
+
+// Internal API Functions
+
+export async function usernameAvaiable(username: string): Promise<boolean> {
+    const users = await getUsersBy({username: username});
+    return users.length === 0;
+}
+
+export async function emailAvaiable(email: string): Promise<boolean> {
+    const users = await getUsersBy({email: email});
+    return users.length === 0;
+}
 
 export async function createUser(
     user: PrivateUser,
@@ -31,24 +56,23 @@ export async function createUser(
     }
 }
 
-export async function getUsersBy(query: mongoose.FilterQuery<PrivateUser>): Promise<PrivateUser[]> {
-    try {
-        return await UserModel.find(query).exec();
-    } catch (error: any) {
-        throw new Error(error);
+
+export async function userByUsername(username: string): Promise<User | null> {
+    const user = await getUsersBy({username: username});
+    if (user.length === 0) {
+        return null;
+    } else {
+        return privateUserToUser(user[0]);
     }
 }
 
-export async function getAllUsers(): Promise<PrivateUser[]> {
-    return await getUsersBy({});
-}
-
-export async function usernameAvaiable(username: string): Promise<boolean> {
-    const users = await getUsersBy({username: username});
-    return users.length === 0;
-}
-
-export async function emailAvaiable(email: string): Promise<boolean> {
-    const users = await getUsersBy({email: email});
-    return users.length === 0;
+function privateUserToUser(user: PrivateUser): User {
+    return {
+        username: user.username,
+        profilePicture: user.profilePicture,
+        displayName: user.displayName,
+        toDoRoutes: user.toDoRoutes,
+        featuredRoutes: user.featuredRoutes,
+        biography: user.biography
+    }
 }
