@@ -1,4 +1,3 @@
-import createError from 'http-errors';
 import express from 'express';
 import path from 'path';
 import cookieParser from 'cookie-parser';
@@ -8,6 +7,9 @@ import {serverOptions} from "./src/ConfigurationProvider";
 import {apiRouter} from "./src/routes/ApiRoute";
 import {registerEndpoints} from "./src/api/EndpointRegister";
 import {createUser} from "./src/database/model/user/UserManager";
+import helmet from 'helmet';
+import fs from 'fs';
+import https from "https";
 
 export const SERVER = express();
 
@@ -57,6 +59,37 @@ async function setupDatabase() {
 }
 
 function setupServer() {
+
+    let serverStartupOptions = {};
+
+    // SSL use
+    if (serverOptions.useSSL) {
+
+        SERVER.use((req, res, next) => {
+            if (req.secure) {
+                // request is already secure, proceed
+                next();
+            } else {
+                // request is not secure, redirect to https
+                res.redirect('https://' + req.headers.host + req.url);
+            }
+        });
+
+
+        SERVER.use(helmet.hsts({
+            maxAge: 31536000,
+            includeSubDomains: true,
+            preload: true
+        }))
+
+        serverStartupOptions = {
+            key: fs.readFileSync('./ssl/private.pem'),
+            cert: fs.readFileSync('./ssl/certificate.pem'),
+            passphrase: 'redstone'
+        }
+
+    }
+
     // view engine setup
     SERVER.set('views', path.join(__dirname, 'views'));
     SERVER.set('view engine', 'pug');
@@ -70,8 +103,8 @@ function setupServer() {
     setupRoutes();
 
     //forward to error handler
-    SERVER.use((req: any, res: any, next: any) => {
-        next(createError(404));
+    SERVER.use((req: any, res: any) => {
+        res.status(404).send("404 - Not found");
     });
 
     // error handler
@@ -82,8 +115,7 @@ function setupServer() {
     });
 
     const port = serverOptions.listeningPort;
+    https.createServer(serverStartupOptions, SERVER).listen(port);
 
-    SERVER.listen(port, () => {
-        console.log('Server is running on port', port);
-    });
+    console.log('Server is running on port', port);
 }
