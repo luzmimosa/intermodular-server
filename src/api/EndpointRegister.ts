@@ -1,9 +1,13 @@
+import {getUserEndpoint} from "./endpoints/GetUserEndpoint";
 
 
 const REGISTER = new Map<Endpoint, EndpointPermission>();
 
-function registerEndpoints() {
-    //registerEndpoint({path: "v1/user", method: "GET", onCall: (req, res) => processGetUserEndpoint(req, res)}, EndpointPermission.USER);
+export function registerEndpoints() {
+    registerEndpoint(
+        getUserEndpoint,
+        EndpointPermission.PUBLIC
+    );
 }
 
 function registerEndpoint(endpoint: Endpoint, permission: EndpointPermission) {
@@ -30,9 +34,51 @@ function isPathAvaiable(path: string): boolean {
 export interface Endpoint {
     path: string;
     method: "GET" | "POST" | "PUT" | "DELETE";
-    onCall: (req: Request, res: Response) => void;
+    onCall: (args: string[], req: any, res: any) => void;
 }
 
 export enum EndpointPermission {
+    PUBLIC,
+    ONLY_USERS,
     ONLY_ADMIN
+}
+
+function getEndpoint(endpointPath: string, method: "GET" | "POST" | "PUT" | "DELETE"): Endpoint | undefined {
+    for (const endpoint of REGISTER.keys()) {
+        if (endpointPath.startsWith(endpoint.path) && endpoint.method === method) {
+            return endpoint;
+        }
+    }
+    return undefined;
+}
+
+export async function handleRequest(endpointPath: string, method: "GET" | "POST" | "PUT" | "DELETE", req: any, res: any) {
+    const endpoint = getEndpoint(endpointPath, method);
+    if (!endpoint) {
+        res.status(404).send("Unknown endpoint");
+        return;
+    }
+
+    if (!canAccessEndpoint(REGISTER.get(endpoint) as EndpointPermission, req)) {
+        res.status(403).send("Forbidden");
+        return;
+    }
+
+    endpoint.onCall(
+        extractArgs(endpointPath, endpoint),
+        req,
+        res
+    );
+}
+
+function extractArgs(endpointPath: string, endpoint: Endpoint): string[] {
+    return endpointPath.replace("/" + endpoint.path, "").split("/", 20);
+}
+
+function canAccessEndpoint(permission: EndpointPermission, req: any): boolean {
+    if (permission === EndpointPermission.PUBLIC) {
+        return true;
+    }
+
+    return false;
 }

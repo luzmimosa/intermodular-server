@@ -6,10 +6,11 @@ import logger from 'morgan';
 import {connectToDatabase} from "./src/database/GlobalDatabase";
 import {serverOptions} from "./src/ConfigurationProvider";
 import {apiRouter} from "./src/routes/ApiRoute";
+import {registerEndpoints} from "./src/api/EndpointRegister";
 
 export const SERVER = express();
 
-startupSequence();
+startupSequence().then(() => console.log("Startup sequence finished"));
 
 // Functions
 
@@ -19,7 +20,12 @@ async function startupSequence() {
 
     //server
     setupServer();
+    setupEndpoints();
 
+}
+
+function setupEndpoints() {
+    registerEndpoints();
 }
 
 async function setupRoutes() {
