@@ -5,14 +5,11 @@ import cookieParser from 'cookie-parser';
 import logger from 'morgan';
 import {connectToDatabase} from "./src/database/GlobalDatabase";
 import {serverOptions} from "./src/ConfigurationProvider";
-
-
-// routes constants
+import {apiRouter} from "./src/routes/ApiRoute";
 
 export const SERVER = express();
 
 startupSequence();
-
 
 // Functions
 
@@ -22,6 +19,11 @@ async function startupSequence() {
 
     //server
     setupServer();
+
+}
+
+async function setupRoutes() {
+    SERVER.use(apiRouter);
 }
 
 async function setupDatabase() {
@@ -45,6 +47,7 @@ function setupServer() {
     SERVER.use(cookieParser());
     SERVER.use(express.static(path.join(__dirname, 'public')));
 
+    setupRoutes();
 
     //forward to error handler
     SERVER.use((req: any, res: any, next: any) => {
