@@ -72,7 +72,7 @@ export async function handleRequest(endpointPath: string, method: "GET" | "POST"
 }
 
 function extractArgs(endpointPath: string, endpoint: Endpoint): string[] {
-    return endpointPath.replace("/" + endpoint.path, "").split("/", 20);
+    return endpointPath.replace(endpoint.path + "/", "").split("/", 20);
 }
 
 function canAccessEndpoint(permission: EndpointPermission, req: any): boolean {
