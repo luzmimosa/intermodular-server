@@ -7,5 +7,6 @@ export const databaseOptions = {
 };
 
 export const serverOptions = {
-    listeningPort: 3000
+    listeningPort: 443,
+    useSSL: true
 }
