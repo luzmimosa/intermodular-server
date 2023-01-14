@@ -11,10 +11,11 @@ export interface User {
 }
 
 export interface PrivateUser extends User {
-    email: string,
-    passwordHash: string,
-    creationDatetime: number,
-    devices: Array<string>
+    email: string;
+    passwordHash: string;
+    creationDatetime: number;
+    devices: Array<string>;
+
 }
 
 const userSchema = new Schema({
@@ -28,20 +29,6 @@ const userSchema = new Schema({
     passwordHash: { type: String, required: true },
     creationDatetime: { type: Number, required: true },
     devices: { type: Array, required: true }
-
-    /*
-
-    username: { type: String, required: true },
-    displayName: { type: String, required: true },
-    profilePicture: { type: String, required: false, default: "default_profile_picture.png" },
-    biography: { type: String, required: false, default: "" },
-    featuredRoutes: { type: Array, required: false, default: [] },
-    toDoRoutes: { type: Array, required: false, default: [] },
-    email: { type: String, required: true },
-    passwordHash: { type: String, required: true },
-    creationDatetime: { type: Number, required: true },
-    devices: { type: Array, required: true }
-     */
 });
 
 export const UserModel = mongoose.model('user', userSchema);
