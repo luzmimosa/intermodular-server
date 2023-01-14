@@ -7,6 +7,7 @@ import {connectToDatabase} from "./src/database/GlobalDatabase";
 import {serverOptions} from "./src/ConfigurationProvider";
 import {apiRouter} from "./src/routes/ApiRoute";
 import {registerEndpoints} from "./src/api/EndpointRegister";
+import {createUser} from "./src/database/model/user/UserManager";
 
 export const SERVER = express();
 
@@ -21,6 +22,19 @@ async function startupSequence() {
     //server
     setupServer();
     setupEndpoints();
+
+    createUser({
+        username: "alpaca",
+        passwordHash: "edf9cf90718610ee7de53c0dcc250739239044de9ba115bb0ca6026c3e4958a5",
+        email: "alpaca@gmail.com",
+        profilePicture: "default_profile_picture.png",
+        displayName: "Alpaca ~ 💕",
+        biography: "I am an alpaca",
+        creationDatetime: Date.now(),
+        devices: [],
+        featuredRoutes: [],
+        toDoRoutes: [],
+    })
 
 }
 
