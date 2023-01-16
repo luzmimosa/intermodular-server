@@ -8,5 +8,7 @@ export const databaseOptions = {
 
 export const serverOptions = {
     listeningPort: 443,
-    useSSL: true
+    sslKeyPath: './ssl/private.pem',
+    sslCertPath: './ssl/certificate.pem',
+    sslPassphrase: 'redstone'
 }
