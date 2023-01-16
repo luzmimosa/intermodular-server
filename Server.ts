@@ -1,4 +1,4 @@
-import express from 'express';
+import express, {Express} from 'express';
 import path from 'path';
 import cookieParser from 'cookie-parser';
 import logger from 'morgan';
@@ -9,99 +9,93 @@ import {registerEndpoints} from "./src/api/EndpointRegister";
 import helmet from 'helmet';
 import fs from 'fs';
 import https from "https";
+import createHttpError from "http-errors";
 
-export const SERVER = express();
+startServer();
 
-startupSequence().then(() => console.log("Startup sequence finished"));
+async function startServer() {
+    const mainServer = express();
 
-// Functions
-
-async function startupSequence() {
-    // database
-    if (!(await setupDatabase())) return;
-
-    //server
-    setupServer();
-    setupEndpoints();
-
-}
-
-function setupEndpoints() {
+    // Modules initialization
+    await setupDatabaseConnection();
     registerEndpoints();
-}
 
-async function setupRoutes() {
-    SERVER.use(apiRouter);
-}
+    // Server configuration
+    configureSSL(mainServer);
+    setupMiddleware(mainServer);
+    setupRoutes(mainServer);
+    setupErrors(mainServer);
 
-async function setupDatabase() {
-    let databaseConnected = true;
-    await connectToDatabase((error) => {
-        console.error(error);
-        databaseConnected = false;
-    })
-
-    return databaseConnected;
-}
-
-function setupServer() {
-
-    let serverStartupOptions = {};
-
-    // SSL use
-    if (serverOptions.useSSL) {
-
-        SERVER.use((req, res, next) => {
-            if (req.secure) {
-                // request is already secure, proceed
-                next();
-            } else {
-                // request is not secure, redirect to https
-                res.redirect('https://' + req.headers.host + req.url);
-            }
-        });
+    // Start server
+    listenSecurely(
+        mainServer,
+        serverOptions.listeningPort,
+        {
+            key: fs.readFileSync(serverOptions.sslKeyPath),
+            cert: fs.readFileSync(serverOptions.sslCertPath),
+            passphrase: serverOptions.sslPassphrase
+        }
+    )
 
 
-        SERVER.use(helmet.hsts({
+    async function setupDatabaseConnection() {
+
+        let databaseConnected = true;
+        await connectToDatabase((error) => {
+            console.error(error);
+            databaseConnected = false;
+        })
+
+        if (!databaseConnected) throw new Error("Database connection failed");
+    }
+
+    function configureSSL(server: Express) {
+        server.use(helmet.hsts({
             maxAge: 31536000,
             includeSubDomains: true,
             preload: true
-        }))
-
-        serverStartupOptions = {
-            key: fs.readFileSync('./ssl/private.pem'),
-            cert: fs.readFileSync('./ssl/certificate.pem'),
-            passphrase: 'redstone'
-        }
-
+        }));
     }
 
-    // view engine setup
-    SERVER.set('views', path.join(__dirname, 'views'));
-    SERVER.set('view engine', 'pug');
+    function setupMiddleware(server: Express) {
+        // view engine setup
+        server.set('views', path.join(__dirname, 'views'));
+        server.set('view engine', 'pug');
 
-    SERVER.use(logger('dev'));
-    SERVER.use(express.json());
-    SERVER.use(express.urlencoded({ extended: false }));
-    SERVER.use(cookieParser());
-    SERVER.use(express.static(path.join(__dirname, 'public')));
+        // logger
+        server.use(logger('dev'));
 
-    setupRoutes();
+        // body parser
+        server.use(express.json());
+        server.use(express.urlencoded({ extended: false }));
 
-    //forward to error handler
-    SERVER.use((req: any, res: any) => {
-        res.status(404).send("404 - Not found");
-    });
+        // cookie parser
+        server.use(cookieParser());
 
-    // error handler
-    SERVER.use((err: any, req: any, res: any) => {
-        // render the error page
-        res.status(err.status || 500);
-        res.render('error');
-    });
+        // static files
+        server.use(express.static(path.join(__dirname, 'public')));
+    }
 
-    const port = serverOptions.listeningPort;
-    https.createServer(serverStartupOptions, SERVER).listen(port);
+    function setupRoutes(server: Express) {
+        server.use(apiRouter);
+    }
 
-    console.log('Server is running on port', port);
+    function setupErrors(server: Express) {
+        //forward to error handler
+        server.use((req: any, res: any, next: any) => {
+            next(createHttpError(404));
+        });
+
+        // error handler
+        server.use((err: any, req: any, res: any) => {
+            // render the error page
+            res.status(err.status || 500);
+            res.render('error');
+        });
+    }
+
+    function listenSecurely(server: Express, port: number, options: {key: Buffer, cert: Buffer, passphrase: string}) {
+        https.createServer(options, server).listen(port);
+        console.log('Server is listening on port', port);
+    }
 }
