@@ -10,5 +10,5 @@ export const serverOptions = {
     listeningPort: 443,
     sslKeyPath: './ssl/private.pem',
     sslCertPath: './ssl/certificate.pem',
-    sslPassphrase: 'redstone'
+    sslPassphrase: process.env.SSL_PASSPHRASE !!
 }
