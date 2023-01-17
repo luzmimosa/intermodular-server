@@ -11,6 +11,7 @@ import fs from 'fs';
 import https from "https";
 import createHttpError from "http-errors";
 import {accountRouter} from "./src/routes/AccountRoute";
+import {userValidator} from "./src/auth/AutenticatorMiddleware";
 
 console.log("Starting server")
 startServer();
@@ -25,6 +26,7 @@ async function startServer() {
     // Server configuration
     configureSSL(mainServer);
     setupMiddleware(mainServer);
+    setupCustomMiddleware(mainServer);
     setupRoutes(mainServer);
     setupErrors(mainServer);
 
@@ -76,6 +78,10 @@ async function startServer() {
 
         // static files
         server.use(express.static(path.join(__dirname, 'public')));
+    }
+
+    function setupCustomMiddleware(server: Express) {
+        server.use(userValidator);
     }
 
     function setupRoutes(server: Express) {
