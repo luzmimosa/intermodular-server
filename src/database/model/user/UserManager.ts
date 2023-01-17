@@ -100,7 +100,6 @@ export const credentialsMatch = {
     }
 }
 
-
 function privateUserToUser(user: PrivateUser): User {
     return {
         username: user.username,
