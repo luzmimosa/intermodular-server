@@ -7,7 +7,8 @@ export interface User {
     profilePicture: string,
     biography: string,
     featuredRoutes: Array<string>,
-    toDoRoutes: Array<string>,
+    toDoRoutes: Array<string>
+
 }
 
 export interface PrivateUser extends User {
