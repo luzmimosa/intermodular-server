@@ -69,6 +69,15 @@ export async function userByUsername(username: string): Promise<User | null> {
     }
 }
 
+export async function userByEmail(email: string): Promise<User | null> {
+    const user = await getUsersBy({email: email});
+    if (user.length === 0) {
+        return null;
+    } else {
+        return privateUserToUser(user[0]);
+    }
+}
+
 export const credentialsMatch = {
     byUsername: async (username: string, password: string): Promise<boolean> => {
         const user = await getUsersBy({username: username})
