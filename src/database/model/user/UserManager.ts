@@ -1,5 +1,6 @@
 import {PrivateUser, User, UserModel} from "./UserModel";
 import * as mongoose from "mongoose";
+import {hash, compareSync} from "bcrypt";
 
 async function getUsersBy(query: mongoose.FilterQuery<PrivateUser>): Promise<PrivateUser[]> {
     try {
@@ -44,6 +45,8 @@ export async function createUser(
             return;
         }
 
+        user.passwordHash = await encryptPassword(user.passwordHash);
+
         const newUser = new UserModel(user);
         await newUser.save();
 
@@ -66,6 +69,29 @@ export async function userByUsername(username: string): Promise<User | null> {
     }
 }
 
+export const credentialsMatch = {
+    byUsername: async (username: string, password: string): Promise<boolean> => {
+        const user = await getUsersBy({username: username})
+
+        if (user.length === 0) {
+            return false;
+        }
+
+        return compareSync(password, user[0].passwordHash);
+    },
+
+    byEmail: async (email: string, password: string): Promise<boolean> => {
+        const user = await getUsersBy({email: email})
+
+        if (user.length === 0) {
+            return false;
+        }
+
+        return compareSync(password, user[0].passwordHash);
+    }
+}
+
+
 function privateUserToUser(user: PrivateUser): User {
     return {
         username: user.username,
@@ -75,4 +101,8 @@ function privateUserToUser(user: PrivateUser): User {
         featuredRoutes: user.featuredRoutes,
         biography: user.biography
     }
+}
+
+async function encryptPassword(password: string): Promise<string> {
+    return await hash(password, 10);
 }
