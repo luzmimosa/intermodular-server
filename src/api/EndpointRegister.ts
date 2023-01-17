@@ -1,14 +1,28 @@
 import {getUserEndpoint} from "./endpoints/GetUserEndpoint";
 import {RequestPermission} from "../Permissions";
+import {getRouteEndpoint} from "./endpoints/GetRouteEndpoint";
+import {postCreateRouteEndpoint} from "./endpoints/PostCreateRouteEndpoint";
 
 
 const REGISTER = new Map<Endpoint, RequestPermission>();
 
 export function registerEndpoints() {
+
     registerEndpoint(
         getUserEndpoint,
         RequestPermission.PUBLIC
     );
+
+    registerEndpoint(
+        getRouteEndpoint,
+        RequestPermission.PUBLIC
+    );
+
+    registerEndpoint(
+        postCreateRouteEndpoint,
+        RequestPermission.USER
+    );
+
 }
 
 function registerEndpoint(endpoint: Endpoint, permission: RequestPermission) {
@@ -50,12 +64,12 @@ function getEndpoint(endpointPath: string, method: "GET" | "POST" | "PUT" | "DEL
 export async function handleRequest(endpointPath: string, method: "GET" | "POST" | "PUT" | "DELETE", req: any, res: any) {
     const endpoint = getEndpoint(endpointPath, method);
     if (!endpoint) {
-        res.status(404).send("Unknown endpoint");
+        res.status(404).json({message: "ENDPOINT_NOT_FOUND"});
         return;
     }
 
     if (!canAccessEndpoint(REGISTER.get(endpoint) as RequestPermission, req)) {
-        res.status(403).send("Forbidden");
+        res.status(403).json({message: "INSUFFICIENT_PERMISSIONS"});
         return;
     }
 
