@@ -1,8 +1,6 @@
 import express from "express";
 import {registerUser} from "../auth/UserRegistrator";
-import {credentialsMatch, userByUsername} from "../database/model/user/UserManager";
-import {User} from "../database/model/user/UserModel";
-import {sign} from "jsonwebtoken";
+import {loginTokenByEmail, loginTokenByUsername} from "../auth/UserAutenticator";
 
 export const accountRouter = express.Router();
 
@@ -39,26 +37,16 @@ accountRouter.post("/account/login", async (req, res) => {
         const email = req.body.email;
         const password = req.body.password !!;
 
-        let match: boolean;
-        let user: User | null;
+        let token: string;
 
         if (username) {
-            match = await credentialsMatch.byUsername(username, password);
-            user = await userByUsername(username);
+            token = await loginTokenByUsername(username, password)
         } else if (email) {
-            match = await credentialsMatch.byEmail(email, password);
-            user = await userByUsername(email);
+            token = await loginTokenByEmail(email, password)
         } else {
             res.status(400).json({ message: "MISSING_PARAMS" });
             return;
         }
-
-        if (!match || !user) {
-            res.status(400).json({ message: "INVALID_CREDENTIALS" });
-            return;
-        }
-
-        const token = generateToken(user);
 
         res.status(200).setHeader("Authorization", token).json({ message: "OK" });
 
@@ -68,19 +56,3 @@ accountRouter.post("/account/login", async (req, res) => {
     }
 })
 
-function generateToken(
-    user: User,
-    expiresIn: number = 60 * 60 * 24 * 7 // 7 days
-): string {
-    return sign(
-        {
-            username: user.username,
-            creationTime: Date.now(),
-        },
-        process.env.JWT_SECRET !!,
-        {
-            expiresIn: expiresIn,
-            algorithm: "HS256"
-        }
-    );
-}
