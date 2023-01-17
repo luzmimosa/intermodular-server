@@ -10,6 +10,7 @@ import helmet from 'helmet';
 import fs from 'fs';
 import https from "https";
 import createHttpError from "http-errors";
+import {accountRouter} from "./src/routes/AccountRoute";
 
 startServer();
 
@@ -78,6 +79,7 @@ async function startServer() {
 
     function setupRoutes(server: Express) {
         server.use(apiRouter);
+        server.use(accountRouter);
     }
 
     function setupErrors(server: Express) {
