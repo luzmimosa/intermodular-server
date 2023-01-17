@@ -7,7 +7,7 @@ export const getUserEndpoint = {
     path: "v1/user",
     onCall: async (args, req, res) => {
         if (args.length < 1) {
-            res.status(400).send("Missing arguments");
+            res.status(400).json({message: "MISSING_USERNAME"});
             return;
         }
 
@@ -15,7 +15,7 @@ export const getUserEndpoint = {
 
         const databaseUser = await userByUsername(username);
         if (!databaseUser) {
-            res.status(404).json({error: "User not found"});
+            res.status(404).json({message: "USER_NOT_FOUND"});
             return;
         }
 
