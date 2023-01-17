@@ -12,6 +12,7 @@ import https from "https";
 import createHttpError from "http-errors";
 import {accountRouter} from "./src/routes/AccountRoute";
 
+console.log("Starting server")
 startServer();
 
 async function startServer() {
