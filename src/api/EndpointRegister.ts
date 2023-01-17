@@ -1,16 +1,17 @@
 import {getUserEndpoint} from "./endpoints/GetUserEndpoint";
+import {RequestPermission} from "../Permissions";
 
 
-const REGISTER = new Map<Endpoint, EndpointPermission>();
+const REGISTER = new Map<Endpoint, RequestPermission>();
 
 export function registerEndpoints() {
     registerEndpoint(
         getUserEndpoint,
-        EndpointPermission.PUBLIC
+        RequestPermission.PUBLIC
     );
 }
 
-function registerEndpoint(endpoint: Endpoint, permission: EndpointPermission) {
+function registerEndpoint(endpoint: Endpoint, permission: RequestPermission) {
     if (!isPathAvaiable(endpoint.path)) {
         throw new Error(`Path ${endpoint.path} is already registered for method ${endpoint.method}`);
     }
@@ -37,12 +38,6 @@ export interface Endpoint {
     onCall: (args: string[], req: any, res: any) => void;
 }
 
-export enum EndpointPermission {
-    PUBLIC,
-    ONLY_USERS,
-    ONLY_ADMIN
-}
-
 function getEndpoint(endpointPath: string, method: "GET" | "POST" | "PUT" | "DELETE"): Endpoint | undefined {
     for (const endpoint of REGISTER.keys()) {
         if (endpointPath.startsWith(endpoint.path) && endpoint.method === method) {
@@ -59,7 +54,7 @@ export async function handleRequest(endpointPath: string, method: "GET" | "POST"
         return;
     }
 
-    if (!canAccessEndpoint(REGISTER.get(endpoint) as EndpointPermission, req)) {
+    if (!canAccessEndpoint(REGISTER.get(endpoint) as RequestPermission, req)) {
         res.status(403).send("Forbidden");
         return;
     }
@@ -75,10 +70,8 @@ function extractArgs(endpointPath: string, endpoint: Endpoint): string[] {
     return endpointPath.replace(endpoint.path + "/", "").split("/", 20);
 }
 
-function canAccessEndpoint(permission: EndpointPermission, req: any): boolean {
-    if (permission === EndpointPermission.PUBLIC) {
-        return true;
-    }
+function canAccessEndpoint(permission: RequestPermission, req: any): boolean {
 
-    return false;
+    const requestPermission = req.permission as RequestPermission;
+    return requestPermission >= permission;
 }
