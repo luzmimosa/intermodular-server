@@ -1,5 +1,5 @@
 import {Endpoint} from "../EndpointRegister";
-import {routeByID} from "../../database/model/route/RouteManager";
+import {routeByUID} from "../../database/model/route/RouteManager";
 
 
 export const getRouteEndpoint = {
@@ -13,7 +13,7 @@ export const getRouteEndpoint = {
 
         const routeId = args[0];
 
-        const databaseRoute = await routeByID(routeId);
+        const databaseRoute = await routeByUID(routeId);
 
         if (!databaseRoute) {
             res.status(404).json({message: "ROUTE_NOT_FOUND"});
