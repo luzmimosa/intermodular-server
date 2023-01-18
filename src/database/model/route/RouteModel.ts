@@ -2,6 +2,7 @@ import { Schema } from 'mongoose';
 import * as mongoose from "mongoose";
 
 export interface Route {
+    uid: string
     name: string,
     description: string,
     image: string,
@@ -59,6 +60,7 @@ const gpsMeasureSchema = new Schema({
 });
 
 const routeSchema = new Schema({
+    uid: { type: String, required: true },
     name: { type: String, required: true },
     description: { type: String, required: true },
     image: { type: String, required: true },
