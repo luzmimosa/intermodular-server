@@ -1,5 +1,5 @@
 import {Endpoint} from "../EndpointRegister";
-import {createRoute} from "../../database/model/route/RouteManager";
+import {createRoute, generateRouteUID} from "../../database/model/route/RouteManager";
 import {
     calculateRouteLenght,
     GpsMeasure,
@@ -15,12 +15,11 @@ export const postCreateRouteEndpoint = {
     onCall: async (args, req, res) => {
         try {
 
-            const rawRoute = req.body;
-
-            console.log(rawRoute);
-
+            const uid = generateRouteUID(req.body.locations !! as GpsMeasure[]);
 
             const route = {
+                uid: uid,
+
                 name: req.body.name !!,
                 description: req.body.description !!,
                 difficulty: req.body.difficulty !! as RouteDifficulty,
@@ -34,14 +33,13 @@ export const postCreateRouteEndpoint = {
                 creationDatetime: Date.now(),
             } as Route;
 
-            createRoute(
+            await createRoute(
                 route,
                 () => {
                     res.status(200).json({message: "SUCCESS"});
                 },
                 (error) => {
-                    console.log("DATABASE ERROR:", error);
-                    res.status(500).json({message: "UNKNOWN_ERROR"});
+                    res.status(500).json({message: error});
                 }
             )
         } catch (error: any) {
