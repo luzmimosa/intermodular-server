@@ -52,7 +52,7 @@ accountRouter.post("/account/login", async (req, res) => {
 
     } catch (error: any) {
         console.log(error);
-        res.status(400).json({ message: "MISSING_PARAMS" });
+        res.status(400).json({ message: "UNKNOWN_ERROR" });
     }
 })
 
