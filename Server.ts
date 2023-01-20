@@ -12,6 +12,7 @@ import https from "https";
 import createHttpError from "http-errors";
 import {accountRouter} from "./src/routes/AccountRoute";
 import {userValidator} from "./src/auth/AutenticatorMiddleware";
+import {serverStatusRouter} from "./src/routes/StatusRoute";
 
 console.log("Starting server")
 startServer();
@@ -85,6 +86,8 @@ async function startServer() {
     }
 
     function setupRoutes(server: Express) {
+        server.use(serverStatusRouter);
+
         server.use(apiRouter);
         server.use(accountRouter);
     }

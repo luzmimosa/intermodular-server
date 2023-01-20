@@ -61,8 +61,7 @@ export async function registerUser(
         () => {
             callback("SUCCESS", false);
         },
-        (error) => {
-            console.log("ERROR:", error);
+        () => {
             callback("UNKNOWN_ERROR", true);
         }
     )

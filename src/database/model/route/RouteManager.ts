@@ -1,6 +1,7 @@
 
 import * as mongoose from "mongoose";
-import {PrivateRoute, Route, RouteModel} from "./RouteModel";
+import {GpsMeasure, PrivateRoute, Route, RouteModel} from "./RouteModel";
+import {createHash} from "crypto";
 
 async function getRoutesBy(query: mongoose.FilterQuery<PrivateRoute>): Promise<PrivateRoute[]> {
     try {
@@ -24,6 +25,11 @@ export async function createRoute(
 ) {
     console.log("Creating route");
 
+    if (await routeByUID(route.uid) !== undefined) {
+        onError("ROUTE_ALREADY_EXISTS");
+        return;
+    }
+
     try {
         const newRoute = new RouteModel(route);
         await newRoute.save();
@@ -32,13 +38,12 @@ export async function createRoute(
         onSuccess();
 
     } catch (err: any) {
-        console.error(err);
-        onError("Unknown error");
+        onError("UNKNOWN_ERROR");
     }
 }
 
-export async function routeByID(id: string): Promise<Route | undefined> {
-    const routes = await getRoutesBy({_id: id});
+export async function routeByUID(uid: string): Promise<Route | undefined> {
+    const routes = await getRoutesBy({uid: uid});
     if (routes.length === 0) {
         return undefined;
     }
@@ -61,9 +66,26 @@ export async function routesByLocation(location: {latitude: number, longitude: n
     return routes.map(privateRouteToRoute);
 }
 
+export async function routesByCreator(creator: string): Promise<Route[]> {
+    const routes = await getRoutesBy({creator: creator});
+    return routes.map(privateRouteToRoute);
+}
+export function generateRouteUID(locations: GpsMeasure[]): string {
+
+    let seed: string = "";
+
+    for (const location of locations) {
+        seed += location.latitude.toString() + location.longitude.toString();
+    }
+
+    return createHash("sha256").update(seed).digest("hex");
+
+}
+
 
 function privateRouteToRoute(route: PrivateRoute): Route {
     return {
+        uid: route.uid,
         name: route.name,
         description: route.description,
         image: route.image,
