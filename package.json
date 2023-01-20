@@ -3,7 +3,9 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "nodemon Server.ts"
+    "start": "nodemon Server.ts",
+    "test": "jest",
+    "tested-start": "concurrently --kill-others-on-fail \"npm run start\" \"wait-on https://localhost:/status --timeout 10000 --interval 500 && npm run test\""
   },
   "dependencies": {
     "@types/bcrypt": "^5.0.0",
@@ -16,6 +18,7 @@
     "@types/morgan": "^1.9.4",
     "@types/path-to-regexp": "^1.7.0",
     "bcrypt": "^5.1.0",
+    "concurrently": "^7.6.0",
     "cookie-parser": "~1.4.4",
     "express": "~4.16.1",
     "fs": "^0.0.1-security",
@@ -25,13 +28,28 @@
     "jsonwebtoken": "^9.0.0",
     "mongoose": "^6.8.3",
     "morgan": "~1.9.1",
-    "nodemon": "^2.0.20",
     "pug": "2.0.0-beta11",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "wait-on": "^7.0.1"
   },
   "devDependencies": {
+    "@jest/globals": "^29.3.1",
+    "@types/jest": "^29.2.6",
     "@types/node": "^18.11.18",
+    "@types/supertest": "^2.0.12",
+    "jest": "^29.3.1",
+    "jest-cli": "^29.3.1",
+    "nodemon": "^2.0.20",
+    "supertest": "^6.3.3",
+    "ts-jest": "^29.0.5",
     "typescript": "^4.9.4"
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "testEnvironment": "node",
+    "testMatch": [
+      "**/tests/**/*.test.ts"
+    ]
   }
 }
