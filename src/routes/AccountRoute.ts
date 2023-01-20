@@ -19,9 +19,9 @@ accountRouter.post("/account/register", async (req, res) => {
         registerUser(username, displayName, biography, email, password, (result, isError) => {
             console.log("Response: " + result);
             if (isError) {
-                res.status(400).json({ result: result });
+                res.status(400).json({ message: result });
             } else {
-                res.status(200).json({ result: result });
+                res.status(200).json({ message: result });
             }
         })
 
