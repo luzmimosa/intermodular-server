@@ -1,12 +1,17 @@
 {
   "name": "intermodular-server",
   "version": "0.0.0",
+
+
   "private": true,
+
   "scripts": {
-    "start": "nodemon Server.ts",
+    "start-server": "ts-node Server.ts",
+    "start-demon": "nodemon Server.ts",
     "test": "jest",
     "tested-start": "concurrently --kill-others-on-fail \"npm run start\" \"wait-on https://localhost:/status --timeout 10000 --interval 500 && npm run test\""
   },
+
   "dependencies": {
     "@types/bcrypt": "^5.0.0",
     "@types/cookie-parser": "^1.4.3",
@@ -33,6 +38,7 @@
     "react-dom": "^18.2.0",
     "wait-on": "^7.0.1"
   },
+
   "devDependencies": {
     "@jest/globals": "^29.3.1",
     "@types/jest": "^29.2.6",
@@ -45,6 +51,7 @@
     "ts-jest": "^29.0.5",
     "typescript": "^4.9.4"
   },
+
   "jest": {
     "preset": "ts-jest",
     "testEnvironment": "node",
