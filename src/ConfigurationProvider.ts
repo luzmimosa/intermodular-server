@@ -12,3 +12,7 @@ export const serverOptions = {
     sslCertPath: './ssl/certificate.pem',
     sslPassphrase: process.env.SSL_PASSPHRASE !!
 }
+
+export const isProduction = () => {
+    return (process.env.NODE_ENV ?? "development") === "production";
+}
