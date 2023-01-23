@@ -1,20 +1,21 @@
 import express, {Express} from 'express';
 import path from 'path';
 import cookieParser from 'cookie-parser';
-import logger from 'morgan';
+import {engine} from 'express-handlebars';
 import {connectToDatabase} from "./src/database/GlobalDatabase";
-import {serverOptions} from "./src/ConfigurationProvider";
+import {isProduction, serverOptions} from "./src/ConfigurationProvider";
 import {apiRouter} from "./src/routes/ApiRoute";
 import {registerEndpoints} from "./src/api/EndpointRegister";
 import helmet from 'helmet';
 import fs from 'fs';
 import https from "https";
-import createHttpError from "http-errors";
 import {accountRouter} from "./src/routes/AccountRoute";
 import {userValidator} from "./src/auth/AutenticatorMiddleware";
 import {serverStatusRouter} from "./src/routes/StatusRoute";
+import {serverDevelopmentLogger, serverProductionLogger} from "./src/security/ServerLogger";
+import {errorHandler} from "./src/error/ErrorHandler";
 
-console.log("Starting server")
+console.log("Starting server uwu")
 startServer();
 
 async function startServer() {
@@ -26,6 +27,7 @@ async function startServer() {
 
     // Server configuration
     configureSSL(mainServer);
+    setupLogger(mainServer);
     setupMiddleware(mainServer);
     setupCustomMiddleware(mainServer);
     setupRoutes(mainServer);
@@ -62,13 +64,19 @@ async function startServer() {
         }));
     }
 
+    function setupLogger(server: Express) {
+        if (isProduction()) {
+            server.use(serverProductionLogger);
+        } else {
+            server.use(serverDevelopmentLogger);
+        }
+    }
+
     function setupMiddleware(server: Express) {
         // view engine setup
+        server.engine('handlebars', engine({defaultLayout: 'layout', partialsDir: path.join(__dirname, 'views/partials')}));
+        server.set('view engine', 'handlebars');
         server.set('views', path.join(__dirname, 'views'));
-        server.set('view engine', 'pug');
-
-        // logger
-        server.use(logger('dev'));
 
         // body parser
         server.use(express.json());
@@ -95,15 +103,11 @@ async function startServer() {
     function setupErrors(server: Express) {
         //forward to error handler
         server.use((req: any, res: any, next: any) => {
-            next(createHttpError(404));
+            next();
         });
 
         // error handler
-        server.use((err: any, req: any, res: any) => {
-            // render the error page
-            res.status(err.status || 500);
-            res.render('error');
-        });
+        server.use(errorHandler);
     }
 
     function listenSecurely(server: Express, port: number, options: {key: Buffer, cert: Buffer, passphrase: string}) {
