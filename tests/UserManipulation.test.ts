@@ -1,4 +1,4 @@
-import request from 'supertest';
+ import request from 'supertest';
 
 describe('user creation', () => {
     it ('should register an user by using the "/account/register" endpoint ', async () => {
