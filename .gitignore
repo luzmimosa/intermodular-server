@@ -2,3 +2,4 @@
 /.idea
 /ssl/
 /.env
+package-lock.json
