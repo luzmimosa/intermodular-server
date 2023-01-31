@@ -4,10 +4,20 @@
         <meta charset="utf8">
         <link href="/css/main.css">
         <link rel="icon" type="image/x-icon" href="/images/favicon.png">
-        <title>{{title}}</title>
+        <title>{{title}} | {{siteName}}</title>
     </head>
 
     <body>
-        {{{body}}}
+        <header>
+
+        </header>
+
+        <main>
+            {{{body}}}
+        </main>
+
+        <footer>
+            {{siteName}} &copy; {{year}}. {{footerRandomQuote}}
+        </footer>
     </body>
 </html>
