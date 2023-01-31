@@ -19,7 +19,7 @@ export const errorHandler: RequestHandler = (req, res) => {
     // render the error page
     res.status(status);
     res.render('error', {
-        title: "Chocokrispies con nata | UwUloc ",
+        title: "Chocokrispies con nata",
 
         errorMessage: "Oh, algo ha ido mal",
         errorDescription: errorDescriptionMap.get(status) || "Parece que ha habido un error",
