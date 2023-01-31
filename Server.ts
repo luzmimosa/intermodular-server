@@ -15,6 +15,15 @@ import {serverStatusRouter} from "./src/routes/StatusRoute";
 import {serverDevelopmentLogger, serverProductionLogger} from "./src/security/ServerLogger";
 import {errorHandler} from "./src/error/ErrorHandler";
 
+const randomQuotes = [
+    "¿La de trabajar te la sabes?",
+    "Badajoz capital",
+    "Croquetas croquetitas ricas",
+    "¿Minecraft? Lo siento, yo disfruto de la vida real",
+    "¿Qué es eso de la vida real?",
+    "Alcachofas con atún"
+]
+
 console.log("Starting server uwu")
 startServer();
 
@@ -27,6 +36,7 @@ async function startServer() {
 
     // Server configuration
     configureSSL(mainServer);
+    defineLocals(mainServer);
     setupLogger(mainServer);
     setupMiddleware(mainServer);
     setupCustomMiddleware(mainServer);
@@ -62,6 +72,11 @@ async function startServer() {
             includeSubDomains: true,
             preload: true
         }));
+    }
+
+    function defineLocals(server: Express) {
+        server.locals.siteName = "UwUloc";
+        server.locals.footerRandomQuote = () => randomQuotes[Math.floor(Math.random() * randomQuotes.length)];
     }
 
     function setupLogger(server: Express) {
