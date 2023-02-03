@@ -1,6 +1,7 @@
 import express from "express";
 import {registerUser} from "../auth/UserRegistrator";
-import {loginTokenByEmail, loginTokenByUsername} from "../auth/UserAutenticator";
+import {loginTokenByEmail, loginTokenByUsername, renewToken} from "../auth/UserAutenticator";
+
 
 export const accountRouter = express.Router();
 
@@ -30,7 +31,17 @@ accountRouter.post("/account/register", async (req, res) => {
     }
 })
 
-accountRouter.post("/account/login", async (req, res) => {
+accountRouter.post("/account/login", async (req: any, res) => {
+
+    // Try to login with old token
+    if (req.isLogged) {
+
+        try {
+            sendToken(res, await renewToken(req.token));
+        } catch (e) {
+            res.status(403).json({ message: "INVALID_TOKEN" });
+        }
+    }
 
     try {
         const username = req.body.username;
@@ -48,7 +59,7 @@ accountRouter.post("/account/login", async (req, res) => {
             return;
         }
 
-        res.status(200).setHeader("Authorization", token).json({ message: "OK" });
+        sendToken(res, token);
 
     } catch (error: any) {
         console.log(error);
@@ -56,3 +67,6 @@ accountRouter.post("/account/login", async (req, res) => {
     }
 })
 
+function sendToken(res: any, token: string) {
+    res.status(200).setHeader("Authorization", token).json({ message: "OK" });
+}
