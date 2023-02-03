@@ -1,6 +1,6 @@
 import {credentialsMatch, userByEmail, userByUsername} from "../database/model/user/UserManager";
 import {User} from "../database/model/user/UserModel";
-import {sign} from "jsonwebtoken";
+import {decode, sign} from "jsonwebtoken";
 
 
 export async function loginTokenByUsername(username: string, password: string): Promise<string> {
@@ -18,6 +18,16 @@ export async function loginTokenByEmail(email: string, password: string): Promis
 
     if (user) return loginTokenByUsername(user.username, password);
     else throw new Error("INVALID_CREDENTIALS");
+}
+
+export async function renewToken(token: string): Promise<string> {
+    const decodedToken: any = decode(token);
+
+    if (decodedToken.exp < Date.now() / 1000) {
+        throw new Error("TOKEN_EXPIRED");
+    }
+
+    return generateToken((await userByUsername(decodedToken.username)) !!);
 }
 
 function generateToken(
