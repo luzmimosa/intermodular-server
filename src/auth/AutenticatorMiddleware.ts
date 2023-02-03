@@ -7,13 +7,14 @@ export const userValidator = (req: any, res: any, next: any) => {
     const authHeader = req.headers.authorization;
     if (authHeader) {
         const token = authHeader.split(' ')[1];
-        console.log(token)
 
         try {
             const decodedToken: any = verify(token, process.env.JWT_SECRET !!)
-            
+
             req.permission = RequestPermission.USER;
             req.username = decodedToken.username
+            req.isLogged = true;
+            req.token = decodedToken
 
             // Check if the token is expired
             if (decodedToken.exp < Date.now() / 1000) {
