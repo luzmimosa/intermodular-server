@@ -13,7 +13,7 @@ accountRouter.post("/account/register", async (req, res) => {
     try {
         const username: string = req.body.username !!;
         const displayName: string = req.body.displayName ?? username;
-        const biography: string = req.body.biography !!;
+        const biography: string = req.body.biography ?? " ";
         const email: string = req.body.email !!;
         const password: string = req.body.password !!;
 
