@@ -100,6 +100,51 @@ export const credentialsMatch = {
     }
 }
 
+export async function modifyUserData(
+    username: string,
+    field: "username" | "displayName" | "biography" | "email" | "password" | "profilePicture",
+    value: string
+) {
+
+    const user = (await getUsersBy({username: username}))[0] !!;
+    if (!user) throw new Error("USER_NOT_FOUND");
+
+    if (field === "password") {
+        user.passwordHash = await encryptPassword(value);
+    }
+
+    if (field === "email") {
+        if (!(await emailAvaiable(value))) {
+            throw new Error("EMAIL_TAKEN");
+        } else {
+            user.email = value;
+        }
+    }
+
+    if (field === "username") {
+        if (!(await usernameAvaiable(value))) {
+            throw new Error("USERNAME_TAKEN");
+        } else {
+            user.username = value;
+        }
+    }
+
+    if (field === "displayName") {
+        user.displayName = value;
+    }
+
+    if (field === "biography") {
+        user.biography = value;
+    }
+
+    if (field === "profilePicture") {
+        user.profilePicture = value;
+    }
+
+    // Save changes to database
+    await UserModel.updateOne({username: username}, user).exec();
+}
+
 function privateUserToUser(user: PrivateUser): User {
     return {
         username: user.username,
