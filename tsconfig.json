@@ -3,6 +3,7 @@
     "target": "ES2022",
 
     "esModuleInterop": true,
+    "moduleResolution": "Node",
 
     "rootDir": "src",
     "outDir": "build",
