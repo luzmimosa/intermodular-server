@@ -3,16 +3,14 @@ import * as mongoose from "mongoose";
 import {GpsMeasure, PrivateRoute, Route, RouteModel} from "./RouteModel";
 import {createHash} from "crypto";
 
+const MAX_RESULTS = 200;
+
 async function getRoutesBy(query: mongoose.FilterQuery<PrivateRoute>): Promise<PrivateRoute[]> {
     try {
-        return await RouteModel.find(query).exec();
+        return await RouteModel.find(query).limit(MAX_RESULTS).exec();
     } catch (error: any) {
         throw new Error(error);
     }
-}
-
-async function getAllRoutes(): Promise<PrivateRoute[]> {
-    return await getRoutesBy({});
 }
 
 
