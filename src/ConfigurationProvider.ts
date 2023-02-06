@@ -10,7 +10,9 @@ export const serverOptions = {
     listeningPort: 443,
     sslKeyPath: './ssl/private.pem',
     sslCertPath: './ssl/certificate.pem',
-    sslPassphrase: process.env.SSL_PASSPHRASE !!
+    sslPassphrase: process.env.SSL_PASSPHRASE !!,
+
+    httpsRedirectUrl: "intermodular.fadedbytes.com"
 }
 
 export const isProduction = () => {
