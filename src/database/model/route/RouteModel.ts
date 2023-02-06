@@ -7,6 +7,7 @@ export interface Route {
     description: string,
     image: string,
     length: number,
+    startingLocation: Coordinate,
     locations: GpsMeasure[],
     types: RouteType[],
     difficulty: RouteDifficulty,
@@ -16,6 +17,11 @@ export interface Route {
 
 export interface PrivateRoute extends Route {
     // empty by now
+}
+
+export interface Coordinate {
+    latitude: number,
+    longitude: number
 }
 
 export interface GpsMeasure {
@@ -59,22 +65,30 @@ const gpsMeasureSchema = new Schema({
     waypoint: { type: waypointSchema, required: false }
 });
 
+const coordinateSchema = new Schema({
+    longitude: { type: Number, required: true },
+    latitude: { type: Number, required: true },
+})
+
 const routeSchema = new Schema({
     uid: { type: String, required: true },
     name: { type: String, required: true },
     description: { type: String, required: true },
     image: { type: String, required: true },
     length: { type: Number, required: true },
-    locations: { type: [gpsMeasureSchema], required: true },
+    startingLocation: { type: coordinateSchema, required: true },
+    locations: { type: [gpsMeasureSchema], required: true},
     types: { type: [{ type: String, enum: Object.values(RouteType) }], required: true },
     difficulty: { type: String, enum: Object.values(RouteDifficulty), required: true },
     creator: { type: String, required: true },
     creationDatetime: { type: Number, required: true }
 });
 
+routeSchema.index({startingLocation: "2dsphere"})
+
 export const RouteModel = mongoose.model('route', routeSchema);
 
-export function calculateRouteLenght(measures: GpsMeasure[]) {
+export function calculateRouteLength(measures: GpsMeasure[]) {
     let total = 0;
     for (let i = 0; i < measures.length - 1; i++) {
         total += calculateDistance(measures[i], measures[i + 1]);
