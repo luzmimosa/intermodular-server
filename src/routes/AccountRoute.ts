@@ -9,6 +9,7 @@ export const accountRouter = express.Router();
 
 accountRouter.post("/account", (req, res) => {
     res.status(200).json({ message: "Hello from account" });
+    // TODO
 })
 
 accountRouter.post("/account/register", async (req, res) => {
