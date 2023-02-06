@@ -14,7 +14,7 @@ export const serverDevelopmentLogger = (req: any, res: any, next: any) => {
     next();
 }
 
-export const serverProductionLogger = (req: any) => {
+export const serverProductionLogger = (req: any, res: any, next: any) => {
     const profile = {
         ip: req.ip,
         method: req.method,
@@ -22,4 +22,6 @@ export const serverProductionLogger = (req: any) => {
     } as RequestProfile;
 
     console.log(`[${Date.now()}] ${profile.ip} -> ${profile.method} ${profile.url}`);
+
+    next();
 }
