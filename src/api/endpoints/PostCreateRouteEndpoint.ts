@@ -1,7 +1,7 @@
 import {Endpoint} from "../EndpointRegister";
 import {createRoute, generateRouteUID} from "../../database/model/route/RouteManager";
 import {
-    calculateRouteLenght,
+    calculateRouteLength,
     GpsMeasure,
     Route,
     RouteDifficulty,
@@ -17,6 +17,8 @@ export const postCreateRouteEndpoint = {
 
             const uid = generateRouteUID(req.body.locations !! as GpsMeasure[]);
 
+            const measures = req.body.locations !! as GpsMeasure[];
+
             const route = {
                 uid: uid,
 
@@ -24,12 +26,18 @@ export const postCreateRouteEndpoint = {
                 description: req.body.description !!,
                 difficulty: req.body.difficulty !! as RouteDifficulty,
                 image: req.body.image !!,
-                locations: req.body.locations !! as GpsMeasure[],
+
+                startingLocation: {
+                    latitude: measures[0].latitude,
+                    longitude: measures[0].longitude
+                },
+
+                locations: measures,
                 types: req.body.types !! as RouteType[],
 
                 creator: req.username !!,
 
-                length: calculateRouteLenght([... req.body.locations] as GpsMeasure[]),
+                length: calculateRouteLength([... req.body.locations] as GpsMeasure[]),
                 creationDatetime: Date.now(),
             } as Route;
 
