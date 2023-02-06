@@ -14,6 +14,7 @@ import {userValidator} from "./src/auth/AutenticatorMiddleware";
 import {serverStatusRouter} from "./src/routes/StatusRoute";
 import {serverDevelopmentLogger, serverProductionLogger} from "./src/security/ServerLogger";
 import {errorHandler} from "./src/error/ErrorHandler";
+import * as http from "http";
 
 const randomQuotes = [
     "¿La de trabajar te la sabes?",
@@ -26,6 +27,7 @@ const randomQuotes = [
 
 console.log("Starting server uwu")
 startServer();
+startRedirectionServer();
 
 async function startServer() {
     const mainServer = express();
@@ -129,4 +131,17 @@ async function startServer() {
         https.createServer(options, server).listen(port);
         console.log('Server is listening on port', port);
     }
+}
+
+async function startRedirectionServer() {
+    const server = express();
+
+    server.use((req, res) => {
+        // redirect to the same url using https instead of http
+        res.redirect("https://" + serverOptions.httpsRedirectUrl + req.url);
+    });
+
+    const port = 80;
+    http.createServer(server).listen(port);
+    console.log('Redirection server is listening on port', port);
 }
