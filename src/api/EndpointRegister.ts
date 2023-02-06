@@ -2,6 +2,7 @@ import {getUserEndpoint} from "./endpoints/GetUserEndpoint";
 import {RequestPermission} from "../Permissions";
 import {getRouteEndpoint} from "./endpoints/GetRouteEndpoint";
 import {postCreateRouteEndpoint} from "./endpoints/PostCreateRouteEndpoint";
+import {getNearlyRoutesEndpoint} from "./endpoints/GetNearlyRoutesEndpoint";
 
 
 const REGISTER = new Map<Endpoint, RequestPermission>();
@@ -22,6 +23,11 @@ export function registerEndpoints() {
         postCreateRouteEndpoint,
         RequestPermission.USER
     );
+
+    registerEndpoint(
+        getNearlyRoutesEndpoint,
+        RequestPermission.USER
+    )
 
 }
 
