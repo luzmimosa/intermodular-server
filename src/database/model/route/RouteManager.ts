@@ -50,15 +50,15 @@ export async function routeByUID(uid: string): Promise<Route | undefined> {
     return privateRouteToRoute(routes[0]);
 }
 
-export async function routesByLocation(location: {latitude: number, longitude: number}, radius: number): Promise<Route[]> {
+export async function routesByLocation(location: {latitude: number, longitude: number}, kilometers: number): Promise<Route[]> {
     const routes = await getRoutesBy({
-        locations: {
+        startingLocation: {
             $near: {
                 $geometry: {
                     type: "Point",
                     coordinates: [location.longitude, location.latitude]
                 },
-                $maxDistance: radius
+                $maxDistance: kilometers * 1000
             }
         }
     });
@@ -89,6 +89,7 @@ function privateRouteToRoute(route: PrivateRoute): Route {
         name: route.name,
         description: route.description,
         image: route.image,
+        startingLocation: route.startingLocation,
         locations: route.locations,
         types: route.types,
         length: route.length,
