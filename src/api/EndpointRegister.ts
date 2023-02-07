@@ -16,7 +16,7 @@ export function registerEndpoints() {
 
     registerEndpoint(
         getRouteEndpoint,
-        RequestPermission.PUBLIC
+        RequestPermission.USER
     );
 
     registerEndpoint(
