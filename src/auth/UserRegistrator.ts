@@ -1,6 +1,6 @@
 import {createUser, emailAvaiable, usernameAvaiable} from "../database/model/user/UserManager";
 
-const usernameRegex = /^[a-zA-Z0-9_]{3,}$/;
+const usernameRegex = /^\w{3,}$/;
 const displayNameRegex = /^.{3,}$/;
 const emailRegex = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/;
 const bioRegex = /^.{0,120}$/;
@@ -42,7 +42,7 @@ export async function registerUser(
         return;
     }
 
-    createUser(
+    await createUser(
         {
             // Provided info
             username: username,

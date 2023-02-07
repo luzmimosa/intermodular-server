@@ -14,10 +14,13 @@ export async function loginTokenByUsername(username: string, password: string): 
 }
 
 export async function loginTokenByEmail(email: string, password: string): Promise<string> {
-    const user = await userByEmail(email);
+    const match = await credentialsMatch.byEmail(email, password);
 
-    if (user) return loginTokenByUsername(user.username, password);
-    else throw new Error("INVALID_CREDENTIALS");
+    if (!match) {
+        throw new Error("INVALID_CREDENTIALS")
+    }
+
+    return generateToken((await userByEmail(email)) !!)
 }
 
 export async function renewToken(token: string): Promise<string> {

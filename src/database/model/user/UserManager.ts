@@ -10,10 +10,6 @@ async function getUsersBy(query: mongoose.FilterQuery<PrivateUser>): Promise<Pri
     }
 }
 
-async function getAllUsers(): Promise<PrivateUser[]> {
-    return await getUsersBy({});
-}
-
 
 // Internal API Functions
 

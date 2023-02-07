@@ -26,8 +26,12 @@ const randomQuotes = [
 ]
 
 console.log("Starting server uwu")
-startServer();
-startRedirectionServer();
+startServer().then(() => {
+    console.log("Server start sequence completed")
+});
+startRedirectionServer().then(() => {
+    console.log("Redirection server start sequence completed")
+});
 
 async function startServer() {
     const mainServer = express();

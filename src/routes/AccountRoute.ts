@@ -20,7 +20,7 @@ accountRouter.post("/account/register", async (req, res) => {
         const email: string = req.body.email !!;
         const password: string = req.body.password !!;
 
-        registerUser(username, displayName, biography, email, password, (result, isError) => {
+        await registerUser(username, displayName, biography, email, password, (result, isError) => {
             console.log("Response: " + result);
             if (isError) {
                 res.status(400).json({ message: result });
@@ -36,7 +36,7 @@ accountRouter.post("/account/register", async (req, res) => {
 
 accountRouter.post("/account/login", async (req: any, res) => {
 
-    // Try to login with old token
+    // Try to log in with old token
     if (req.isLogged) {
 
         try {

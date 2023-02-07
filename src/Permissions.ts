@@ -3,6 +3,5 @@
 export enum RequestPermission {
     PUBLIC,
     USER,
-    HIGH_SECURITY_USER,
-    ADMIN
+    HIGH_SECURITY_USER
 }
