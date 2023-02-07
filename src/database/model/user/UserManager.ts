@@ -96,6 +96,62 @@ export const credentialsMatch = {
     }
 }
 
+export async function likeRoute(username: string, routeID: string) {
+    const user = await userByUsername(username);
+    if (!user) {
+        throw new Error("USER_NOT_FOUND");
+    }
+
+    if (!user.featuredRoutes.includes(routeID)) {
+        user.featuredRoutes.push(routeID);
+    }
+
+    // save changes to database
+    await updateUser(user)
+
+}
+
+export async function dislikeRoute(username: string, routeID: string) {
+    const user = await userByUsername(username);
+    if (!user) {
+        throw new Error("USER_NOT_FOUND");
+    }
+
+    user.featuredRoutes = user.featuredRoutes.filter(id => id !== routeID);
+
+    // save changes to database
+    await updateUser(user)
+
+}
+
+export async function addToDoRoute(username: string, routeID: string) {
+    const user = await userByUsername(username);
+    if (!user) {
+        throw new Error("USER_NOT_FOUND");
+    }
+
+    if (!user.toDoRoutes.includes(routeID)) {
+        user.toDoRoutes.push(routeID);
+    }
+
+    // save changes to database
+    await updateUser(user)
+
+}
+
+export async function removeToDoRoute(username: string, routeID: string) {
+    const user = await userByUsername(username);
+    if (!user) {
+        throw new Error("USER_NOT_FOUND");
+    }
+
+    user.toDoRoutes = user.toDoRoutes.filter(id => id !== routeID);
+
+    // save changes to database
+    await updateUser(user)
+
+}
+
 export async function modifyUserData(
     username: string,
     field: "username" | "displayName" | "biography" | "email" | "password" | "profilePicture",
@@ -138,7 +194,7 @@ export async function modifyUserData(
     }
 
     // Save changes to database
-    await UserModel.updateOne({username: username}, user).exec();
+    await updateUser(user)
 }
 
 function privateUserToUser(user: PrivateUser): User {
@@ -154,4 +210,9 @@ function privateUserToUser(user: PrivateUser): User {
 
 async function encryptPassword(password: string): Promise<string> {
     return await hash(password, 10);
+}
+
+async function updateUser(user: User) {
+    // Save changes to database
+    await UserModel.updateOne({username: user.username}, user).exec();
 }
