@@ -15,6 +15,8 @@ import {serverStatusRouter} from "./src/routes/StatusRoute";
 import {serverDevelopmentLogger, serverProductionLogger} from "./src/security/ServerLogger";
 import {errorHandler} from "./src/error/ErrorHandler";
 import * as http from "http";
+import {likeRouter} from "./src/routes/LikeRouteRoute";
+import {toDoRouter} from "./src/routes/ToDoRoute";
 
 const randomQuotes = [
     "¿La de trabajar te la sabes?",
@@ -119,6 +121,8 @@ async function startServer() {
 
         server.use(apiRouter);
         server.use(accountRouter);
+        server.use(likeRouter);
+        server.use(toDoRouter);
     }
 
     function setupErrors(server: Express) {
