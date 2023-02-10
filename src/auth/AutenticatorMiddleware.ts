@@ -7,7 +7,7 @@ export const userValidator = (req: any, res: any, next: any) => {
     const authHeader = req.headers.authorization;
 
     if (authHeader) {
-        const tokenParts = authHeader.split(' ')[1];
+        const tokenParts = authHeader.split(' ');
         if (tokenParts.length >= 2) {
 
             const token = tokenParts[1];
