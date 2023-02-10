@@ -38,19 +38,19 @@ export function registerEndpoints() {
 }
 
 function registerEndpoint(endpoint: Endpoint, permission: RequestPermission) {
-    if (!isPathAvaiable(endpoint.path)) {
+    if (!isPathAvaiable(endpoint.path, endpoint.method)) {
         throw new Error(`Path ${endpoint.path} is already registered for method ${endpoint.method}`);
     }
 
     REGISTER.set(endpoint, permission);
 }
 
-function isPathAvaiable(path: string): boolean {
+function isPathAvaiable(path: string, method: string): boolean {
     const cleanPath = path.indexOf(":") === -1 ? path : path.substring(0, path.indexOf(":"));
 
     for (const endpoint of REGISTER.keys()) {
         const cleanEndpointPath = endpoint.path.indexOf(":") === -1 ? endpoint.path : endpoint.path.substring(0, endpoint.path.indexOf(":"));
-        if (cleanEndpointPath === cleanPath && endpoint.method === endpoint.method) {
+        if (cleanEndpointPath === cleanPath && endpoint.method === method) {
             return false;
         }
     }
