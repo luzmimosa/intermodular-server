@@ -68,6 +68,11 @@ export async function routesByCreator(creator: string): Promise<Route[]> {
     const routes = await getRoutesBy({creator: creator});
     return routes.map(privateRouteToRoute);
 }
+
+export async function removeRoute(uid: string) {
+    await RouteModel.deleteOne({uid: uid});
+}
+
 export function generateRouteUID(locations: GpsMeasure[]): string {
 
     let seed: string = "";
