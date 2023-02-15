@@ -12,7 +12,8 @@ export interface Route {
     types: RouteType[],
     difficulty: RouteDifficulty,
     creator: string,
-    creationDatetime: number
+    creationDatetime: number,
+    comments?: Comment[]
 }
 
 export interface PrivateRoute extends Route {
@@ -53,6 +54,12 @@ export enum RouteDifficulty {
     EXPERT = "EXPERT"
 }
 
+export interface Comment {
+    username: string,
+    comment: string,
+    date: number
+}
+
 const waypointSchema = new Schema({
     name: { type: String, required: true },
     description: { type: String, required: true },
@@ -70,6 +77,12 @@ const coordinateSchema = new Schema({
     latitude: { type: Number, required: true },
 })
 
+const commentSchema = new Schema({
+    username: { type: String, required: true },
+    comment: { type: String, required: true },
+    date: { type: Number, required: true }
+})
+
 const routeSchema = new Schema({
     uid: { type: String, required: true },
     name: { type: String, required: true },
@@ -81,7 +94,8 @@ const routeSchema = new Schema({
     types: { type: [{ type: String, enum: Object.values(RouteType) }], required: true },
     difficulty: { type: String, enum: Object.values(RouteDifficulty), required: true },
     creator: { type: String, required: true },
-    creationDatetime: { type: Number, required: true }
+    creationDatetime: { type: Number, required: true },
+    comments: { type: [commentSchema], required: false }
 });
 
 routeSchema.index({startingLocation: "2dsphere"})

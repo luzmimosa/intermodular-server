@@ -1,6 +1,6 @@
 
 import * as mongoose from "mongoose";
-import {GpsMeasure, PrivateRoute, Route, RouteModel} from "./RouteModel";
+import {Comment, GpsMeasure, PrivateRoute, Route, RouteModel} from "./RouteModel";
 import {createHash} from "crypto";
 
 const MAX_RESULTS = 200;
@@ -73,6 +73,20 @@ export async function removeRoute(uid: string) {
     await RouteModel.deleteOne({uid: uid});
 }
 
+export async function commentRoute(routeUid: string, comment: Comment) {
+    const route = await routeByUID(routeUid);
+    if (route === undefined) {
+        throw new Error("ROUTE_NOT_FOUND");
+    }
+
+    if (route.comments) {
+        route.comments.push(comment);
+    } else {
+        route.comments = [comment];
+    }
+    await RouteModel.updateOne({uid: routeUid}, {comments: route.comments});
+}
+
 export function generateRouteUID(locations: GpsMeasure[]): string {
 
     let seed: string = "";
@@ -98,6 +112,7 @@ function privateRouteToRoute(route: PrivateRoute): Route {
         length: route.length,
         difficulty: route.difficulty,
         creator: route.creator,
-        creationDatetime: route.creationDatetime
+        creationDatetime: route.creationDatetime,
+        comments: route.comments
     }
 }
