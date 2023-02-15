@@ -17,6 +17,7 @@ import {errorHandler} from "./src/error/ErrorHandler";
 import * as http from "http";
 import {likeRouter} from "./src/routes/LikeRouteRoute";
 import {toDoRouter} from "./src/routes/ToDoRoute";
+import {imageRouter} from "./src/routes/ImageRoute";
 
 const randomQuotes = [
     "¿La de trabajar te la sabes?",
@@ -26,6 +27,7 @@ const randomQuotes = [
     "¿Qué es eso de la vida real?",
     "Alcachofas con atún"
 ]
+export const publicPath = path.join(__dirname, "public");
 
 console.log("Starting server uwu")
 startServer().then(() => {
@@ -109,7 +111,7 @@ async function startServer() {
         server.use(cookieParser());
 
         // static files
-        server.use(express.static(path.join(__dirname, 'public')));
+        server.use(express.static(publicPath));
     }
 
     function setupCustomMiddleware(server: Express) {
@@ -123,6 +125,7 @@ async function startServer() {
         server.use(accountRouter);
         server.use(likeRouter);
         server.use(toDoRouter);
+        server.use(imageRouter);
     }
 
     function setupErrors(server: Express) {
