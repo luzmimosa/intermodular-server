@@ -41,32 +41,35 @@ accountRouter.post("/account/login", async (req: any, res) => {
 
         try {
             sendToken(res, await renewToken(req.token));
+            return;
         } catch (e) {
+            console.log(e);
             res.status(403).json({ message: "INVALID_TOKEN" });
         }
-    }
+    } else {
 
-    try {
-        const username = req.body.username;
-        const email = req.body.email;
-        const password = req.body.password !!;
+        try {
+            const username = req.body.username;
+            const email = req.body.email;
+            const password = req.body.password !!;
 
-        let token: string;
+            let token: string;
 
-        if (username) {
-            token = await loginTokenByUsername(username, password)
-        } else if (email) {
-            token = await loginTokenByEmail(email, password)
-        } else {
-            res.status(400).json({ message: "MISSING_PARAMS" });
-            return;
+            if (username) {
+                token = await loginTokenByUsername(username, password)
+            } else if (email) {
+                token = await loginTokenByEmail(email, password)
+            } else {
+                res.status(400).json({message: "MISSING_PARAMS"});
+                return;
+            }
+
+            sendToken(res, token);
+
+        } catch (error: any) {
+            console.log(error);
+            res.status(400).json({message: "INVALID_CREDENTIALS"});
         }
-
-        sendToken(res, token);
-
-    } catch (error: any) {
-        console.log(error);
-        res.status(400).json({ message: "UNKNOWN_ERROR" });
     }
 })
 
@@ -122,5 +125,5 @@ accountRouter.post("/account/modify", async (req: any, res) => {
 })
 
 function sendToken(res: any, token: string) {
-    res.status(200).setHeader("Authorization", token).json({ message: "OK" });
+    res.setHeader("Authorization", token).status(200).json({ message: "OK" });
 }
