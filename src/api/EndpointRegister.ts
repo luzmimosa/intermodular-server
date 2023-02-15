@@ -4,6 +4,7 @@ import {getRouteEndpoint} from "./endpoints/GetRouteEndpoint";
 import {postCreateRouteEndpoint} from "./endpoints/PostCreateRouteEndpoint";
 import {getNearlyRoutesEndpoint} from "./endpoints/GetNearlyRoutesEndpoint";
 import {deleteRouteEndpoint} from "./endpoints/DeleteRouteEndpoint";
+import {postCommentEndpoint} from "./endpoints/PostCommentEndpoint";
 
 
 const REGISTER = new Map<Endpoint, RequestPermission>();
@@ -32,6 +33,11 @@ export function registerEndpoints() {
 
     registerEndpoint(
         deleteRouteEndpoint,
+        RequestPermission.USER
+    );
+
+    registerEndpoint(
+        postCommentEndpoint,
         RequestPermission.USER
     );
 
