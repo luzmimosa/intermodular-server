@@ -23,14 +23,19 @@ export async function loginTokenByEmail(email: string, password: string): Promis
     return generateToken((await userByEmail(email)) !!)
 }
 
-export async function renewToken(token: string): Promise<string> {
-    const decodedToken: any = decode(token);
+export async function renewToken(token: any): Promise<string> {
 
-    if (decodedToken.exp < Date.now() / 1000) {
+    console.log("Token:", token)
+
+    if (token.exp < Date.now() / 1000) {
+        console.log("Token expires at: ", token.exp);
+        console.log("Current time: ", Date.now());
+
+        console.log("Token expired ("+ (token.exp < Date.now()) +")");
         throw new Error("TOKEN_EXPIRED");
     }
 
-    return generateToken((await userByUsername(decodedToken.username)) !!);
+    return generateToken((await userByUsername(token.username)) !!);
 }
 
 function generateToken(
