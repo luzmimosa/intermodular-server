@@ -1,6 +1,6 @@
 import {credentialsMatch, userByEmail, userByUsername} from "../database/model/user/UserManager";
 import {User} from "../database/model/user/UserModel";
-import {decode, sign} from "jsonwebtoken";
+import {sign} from "jsonwebtoken";
 
 
 export async function loginTokenByUsername(username: string, password: string): Promise<string> {
