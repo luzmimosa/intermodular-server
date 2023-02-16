@@ -69,6 +69,16 @@ export async function routesByCreator(creator: string): Promise<Route[]> {
     return routes.map(privateRouteToRoute);
 }
 
+export async function randomRoutes(limit: number = 10): Promise<Route[]> {
+    RouteModel.count().exec(async (err, count) => {
+        if (err) throw new Error("ROUTE_COUNT_FAILED");
+
+        return (await RouteModel.find().skip(Math.floor(Math.random() * count)).limit(limit).exec()).map(privateRouteToRoute);
+    })
+
+    return (await RouteModel.find({}).limit(limit).exec()).map(privateRouteToRoute);
+}
+
 export async function removeRoute(uid: string) {
     await RouteModel.deleteOne({uid: uid});
 }
