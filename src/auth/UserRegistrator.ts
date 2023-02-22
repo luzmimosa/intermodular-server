@@ -56,7 +56,8 @@ export async function registerUser(
             toDoRoutes: [],
             featuredRoutes: [],
             profilePicture: "default",
-            creationDatetime: Date.now()
+            creationDatetime: Date.now(),
+            isAdmin: false
         },
         () => {
             callback("SUCCESS", false);
