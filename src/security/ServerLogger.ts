@@ -21,7 +21,10 @@ export const serverProductionLogger = (req: any, res: any, next: any) => {
         url: req.url
     } as RequestProfile;
 
-    console.log(`[${Date.now()}] ${profile.ip} -> ${profile.method} ${profile.url}`);
+    // formated date as dd/mm/yyyy hh:mm:ss
+    const date = new Date().toLocaleString("es-ES", {timeZone: "Europe/Warsaw"});
+
+    console.log(`[${date}] ${profile.ip} -> ${profile.method} ${profile.url}`);
 
     next();
 }
