@@ -73,7 +73,7 @@ accountRouter.post("/account/login", async (req: any, res) => {
     }
 })
 
-accountRouter.post("/account/modify", async (req: any, res) => {
+accountRouter.post("/account/modify/:userid", async (req: any, res) => {
 
     // User is logged in
     if (!req.isLogged) {
@@ -81,7 +81,22 @@ accountRouter.post("/account/modify", async (req: any, res) => {
         return;
     }
 
-    const user = req.username;
+    let user: string;
+
+    if (req.permission >= RequestPermission.ADMIN) {
+        const userid: string | undefined = req.params.userid;
+        if (!userid) {
+            res.status(400).json({ message: "MISSING_USER" });
+            return;
+        }
+
+        user = userid;
+
+    } else {
+        user = req.user;
+    }
+
+
 
     // Not critical information (displayName, biography, profilePicture)
     const displayName       = req.body.displayName ?? undefined;
@@ -89,13 +104,28 @@ accountRouter.post("/account/modify", async (req: any, res) => {
     const profilePicture    = req.body.profilePicture ?? undefined;
 
     if (displayName) {
-        await modifyUserData(user, "displayName", displayName)
+        try {
+            await modifyUserData(user, "displayName", displayName)
+        } catch (e) {
+            res.status(400).json({ message: "INVALID_DISPLAY_NAME" });
+            return;
+        }
     }
     if (biography) {
-        await modifyUserData(user, "biography", biography)
+        try {
+            await modifyUserData(user, "biography", biography)
+        } catch (e) {
+            res.status(400).json({ message: "INVALID_BIOGRAPHY" });
+            return;
+        }
     }
     if (profilePicture) {
-        await modifyUserData(user, "profilePicture", profilePicture)
+        try {
+            await modifyUserData(user, "profilePicture", profilePicture)
+        } catch (e) {
+            res.status(400).json({ message: "INVALID_PROFILE_PICTURE" });
+            return;
+        }
     }
 
     // Critical information (username, email, password)
@@ -110,13 +140,28 @@ accountRouter.post("/account/modify", async (req: any, res) => {
         }
 
         if (username) {
-            await modifyUserData(user, "username", username)
+            try {
+                await modifyUserData(user, "username", username)
+            } catch (e) {
+                res.status(400).json({ message: "INVALID_USERNAME" });
+                return;
+            }
         }
         if (email) {
-            await modifyUserData(user, "email", email)
+            try {
+                await modifyUserData(user, "email", email)
+            } catch (e) {
+                res.status(400).json({ message: "INVALID_EMAIL" });
+                return;
+            }
         }
         if (password) {
-            await modifyUserData(user, "password", password)
+            try {
+                await modifyUserData(user, "password", password)
+            } catch (e) {
+                res.status(400).json({ message: "INVALID_PASSWORD" });
+                return;
+            }
         }
     }
 
