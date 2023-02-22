@@ -1,5 +1,6 @@
 import {Endpoint} from "../EndpointRegister";
 import {routeByUID} from "../../database/model/route/RouteManager";
+import {getRouteLikes} from "../../database/model/user/UserManager";
 
 
 export const getRouteEndpoint = {
@@ -13,13 +14,14 @@ export const getRouteEndpoint = {
 
         const routeId = args[0];
 
-        const databaseRoute = await routeByUID(routeId);
+        const databaseRoute = await routeByUID(routeId) as any;
 
         if (!databaseRoute) {
             res.status(404).json({message: "ROUTE_NOT_FOUND"});
             return;
         }
 
+        databaseRoute.likes = await getRouteLikes(databaseRoute.uid)
         res.status(200).json(databaseRoute);
     }
 } as Endpoint;
