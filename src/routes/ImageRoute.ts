@@ -66,10 +66,9 @@ imageRouter.get(
                 res.status(200).sendFile(image);
                 return;
             }
-        } catch (e) {
+        } catch (e) {}
 
-        }
-
-        res.status(404).json({message: "NOT_FOUND"});
+        const image = path.join(publicPath, "images", "default.png");
+        res.status(200).sendFile(image)
     }
 )
