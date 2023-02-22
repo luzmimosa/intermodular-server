@@ -7,6 +7,6 @@ export const getRandomRoutesEndpoint = {
     path: "v1/randomroutes",
     onCall: async (args, req, res) => {
         const routes = await randomRoutes(10)
-        res.send(routes.map(route => route.uid))
+        res.status(200).json(routes.map(route => route.uid))
     }
 } as Endpoint
