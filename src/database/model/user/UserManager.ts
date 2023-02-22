@@ -197,6 +197,15 @@ export async function modifyUserData(
     await updateUser(user)
 }
 
+export async function isAdmin(username: String) {
+    const user = await getUsersBy({username: username});
+    if (user.length === 0) {
+        return false;
+    } else {
+        return user[0].isAdmin;
+    }
+}
+
 function privateUserToUser(user: PrivateUser): User {
     return {
         username: user.username,
