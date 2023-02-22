@@ -16,6 +16,7 @@ export interface PrivateUser extends User {
     passwordHash: string;
     creationDatetime: number;
     devices: Array<string>;
+    isAdmin: boolean;
 
 }
 
@@ -29,7 +30,8 @@ const userSchema = new Schema({
     email: { type: String, required: true },
     passwordHash: { type: String, required: true },
     creationDatetime: { type: Number, required: true },
-    devices: { type: Array, required: true }
+    devices: { type: Array, required: true },
+    isAdmin: { type: Boolean, required: true, default: false }
 });
 
 export const UserModel = mongoose.model('user', userSchema);
