@@ -1,9 +1,10 @@
 import {RequestPermission} from "../Permissions";
 import {verify} from "jsonwebtoken";
+import {isAdmin} from "../database/model/user/UserManager";
 
 const highSecurityMinutes = 20;
 
-export const userValidator = (req: any, res: any, next: any) => {
+export const userValidator = async (req: any, res: any, next: any) => {
     const authHeader = req.headers.authorization;
 
     if (authHeader) {
@@ -30,6 +31,11 @@ export const userValidator = (req: any, res: any, next: any) => {
                 // Check if the token is high security (recently created)
                 if (decodedToken.iat + (1000 * 60 * highSecurityMinutes) < Date.now()) {
                     req.permission = RequestPermission.HIGH_SECURITY_USER;
+                }
+
+                // Check if the user is admin
+                if (await isAdmin(req.username)) {
+                    req.permission = RequestPermission.ADMIN;
                 }
 
                 next();
