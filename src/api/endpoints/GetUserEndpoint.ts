@@ -6,12 +6,13 @@ export const getUserEndpoint = {
     method: "GET",
     path: "v1/user",
     onCall: async (args, req, res) => {
-        if (args.length < 1) {
-            res.status(400).json({message: "MISSING_USERNAME"});
-            return;
-        }
 
-        const username = args[0];
+        let username: string
+        if (args.length < 1) {
+            username = req.username
+        } else {
+            username = args[0]
+        }
 
         const databaseUser = await userByUsername(username);
         if (!databaseUser) {
