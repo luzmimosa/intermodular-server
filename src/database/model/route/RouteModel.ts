@@ -38,10 +38,10 @@ export interface Waypoint {
 }
 
 export enum RouteType {
-    WALKING = "WALKING",
-    TREEKING = "TREEKING",
+    WALK = "WALK",
+    TREKKING = "TREKKING",
     RUNNING = "RUNNING",
-    BYCYCLE = "BYCYCLE",
+    BYCICLE = "BYCICLE",
     PHOTOGRAPHY = "PHOTOGRAPHY",
     OTHER = "OTHER"
 }
