@@ -21,7 +21,6 @@ export async function createRoute(
     onSuccess: () => void = () => {},
     onError: (error: string) => void = () => {}
 ) {
-    console.log("Creating route");
 
     if (await routeByUID(route.uid) !== undefined) {
         onError("ROUTE_ALREADY_EXISTS");
@@ -32,7 +31,6 @@ export async function createRoute(
         const newRoute = new RouteModel(route);
         await newRoute.save();
 
-        console.log("Route created: ", newRoute.name);
         onSuccess();
 
     } catch (err: any) {
@@ -108,7 +106,6 @@ export function generateRouteUID(locations: GpsMeasure[]): string {
     return createHash("sha256").update(seed).digest("hex");
 
 }
-
 
 function privateRouteToRoute(route: PrivateRoute): Route {
     return {

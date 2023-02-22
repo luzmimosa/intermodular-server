@@ -28,7 +28,6 @@ export async function createUser(
     onSuccess: () => void = () => {},
     onError: (error: string) => void = () => {}
 ) {
-    console.log("Creating user");
 
     try {
         if (!(await usernameAvaiable(user.username))) {
@@ -46,7 +45,6 @@ export async function createUser(
         const newUser = new UserModel(user);
         await newUser.save();
 
-        console.log("User created: ", newUser.username);
         onSuccess();
 
     } catch (err: any) {

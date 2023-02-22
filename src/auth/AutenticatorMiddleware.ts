@@ -41,8 +41,6 @@ export const userValidator = async (req: any, res: any, next: any) => {
                 next();
                 return;
             } catch (e) {
-                console.log("Request with invalid token");
-                console.log(e);
                 res.status(403).json({message: "INVALID_TOKEN"});
                 return;
             }

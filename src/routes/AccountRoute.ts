@@ -21,7 +21,6 @@ accountRouter.post("/account/register", async (req, res) => {
         const password: string = req.body.password !!;
 
         await registerUser(username, displayName, biography, email, password, (result, isError) => {
-            console.log("Response: " + result);
             if (isError) {
                 res.status(400).json({ message: result });
             } else {
@@ -43,7 +42,6 @@ accountRouter.post("/account/login", async (req: any, res) => {
             sendToken(res, await renewToken(req.token));
             return;
         } catch (e) {
-            console.log(e);
             res.status(403).json({ message: "INVALID_TOKEN" });
         }
     } else {
@@ -67,7 +65,6 @@ accountRouter.post("/account/login", async (req: any, res) => {
             sendToken(res, token);
 
         } catch (error: any) {
-            console.log(error);
             res.status(400).json({message: "INVALID_CREDENTIALS"});
         }
     }

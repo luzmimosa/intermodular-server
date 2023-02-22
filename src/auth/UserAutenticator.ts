@@ -25,13 +25,8 @@ export async function loginTokenByEmail(email: string, password: string): Promis
 
 export async function renewToken(token: any): Promise<string> {
 
-    console.log("Token:", token)
 
     if (token.exp < Date.now() / 1000) {
-        console.log("Token expires at: ", token.exp);
-        console.log("Current time: ", Date.now());
-
-        console.log("Token expired ("+ (token.exp < Date.now()) +")");
         throw new Error("TOKEN_EXPIRED");
     }
 

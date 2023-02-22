@@ -51,7 +51,6 @@ export const postCreateRouteEndpoint = {
                 }
             )
         } catch (error: any) {
-            console.log(error)
             res.status(400).json({message: "INVALID_ARGUMENTS"});
         }
     }
