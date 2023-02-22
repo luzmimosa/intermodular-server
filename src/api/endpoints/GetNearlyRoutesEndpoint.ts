@@ -42,13 +42,12 @@ export const getNearlyRoutesEndpoint = {
             radius
         );
 
-        console.log("Values: ", lat, lon, radius)
-        console.log(routes);
+        const responseJSON = routes.map<string>(route => route.uid)
 
 
 
         res.status(200).json(
-            routes.map<string>(route => route.uid)
+            responseJSON
         );
 
     }
