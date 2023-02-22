@@ -150,6 +150,11 @@ export async function removeToDoRoute(username: string, routeID: string) {
 
 }
 
+export async function getRouteLikes(routeID: string): Promise<number> {
+    // users which feturedRoutes array contains routeID
+    return (await getUsersBy({featuredRoutes: routeID})).length;
+}
+
 export async function modifyUserData(
     username: string,
     field: "username" | "displayName" | "biography" | "email" | "password" | "profilePicture",
