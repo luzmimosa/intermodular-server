@@ -7,6 +7,8 @@ import {deleteRouteEndpoint} from "./endpoints/DeleteRouteEndpoint";
 import {postCommentEndpoint} from "./endpoints/PostCommentEndpoint";
 import {getRandomRoutesEndpoint} from "./endpoints/GetRandomRoutesEndpoint";
 import {getUserRoutesEndpoint} from "./endpoints/GetUserRoutesEndpoint";
+import {getAllUsersEndpoint} from "./endpoints/GetAllUsersEndpoint";
+import {deleteUserEndpoint} from "./endpoints/DeleteUserEndpoint";
 
 
 const REGISTER = new Map<Endpoint, RequestPermission>();
@@ -51,6 +53,16 @@ export function registerEndpoints() {
     registerEndpoint(
         getUserRoutesEndpoint,
         RequestPermission.USER
+    );
+
+    registerEndpoint(
+        getAllUsersEndpoint,
+        RequestPermission.ADMIN
+    );
+
+    registerEndpoint(
+        deleteUserEndpoint,
+        RequestPermission.ADMIN
     );
 
 }
