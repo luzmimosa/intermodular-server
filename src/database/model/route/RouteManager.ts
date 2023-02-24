@@ -107,6 +107,14 @@ export function generateRouteUID(locations: GpsMeasure[]): string {
 
 }
 
+export async function deleteRoute(uid: string) {
+    RouteModel.deleteOne({uid: uid});
+}
+
+export async function changeRouteCreator(uid: string, creator: string) {
+    RouteModel.updateOne({uid: uid}, {creator: creator});
+}
+
 function privateRouteToRoute(route: PrivateRoute): Route {
     return {
         uid: route.uid,
