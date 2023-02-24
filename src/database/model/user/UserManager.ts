@@ -1,6 +1,7 @@
 import {PrivateUser, User, UserModel} from "./UserModel";
 import * as mongoose from "mongoose";
 import {hash, compareSync} from "bcrypt";
+import {changeRouteCreator, deleteRoute, routesByCreator} from "../route/RouteManager";
 
 async function getUsersBy(query: mongoose.FilterQuery<PrivateUser>): Promise<PrivateUser[]> {
     try {
@@ -181,6 +182,7 @@ export async function modifyUserData(
             throw new Error("USERNAME_TAKEN");
         } else {
             user.username = value;
+            await handleUsernameChange(username, value)
         }
     }
 
@@ -207,6 +209,38 @@ export async function isAdmin(username: String) {
     } else {
         return user[0].isAdmin;
     }
+}
+
+export async function deleteUser(username: string): Promise<boolean> {
+
+    const user = await getUsersBy({username: username});
+
+    if (user.length === 0) {
+        return false;
+    }
+
+    const userRoutes = await routesByCreator(username);
+    for (const route of userRoutes) {
+        await deleteRoute(route.uid);
+    }
+
+    await UserModel.deleteOne({username: username}).exec();
+
+    return true;
+
+}
+
+export async function handleUsernameChange(oldUsername: string, newUsername: string) {
+    const oldUsernameRoutes = await routesByCreator(oldUsername);
+
+    for (const route of oldUsernameRoutes) {
+        await changeRouteCreator(route.uid, newUsername);
+    }
+}
+
+export async function getAllUsernames(): Promise<string[]> {
+    const users = await getUsersBy({});
+    return users.map(user => user.username);
 }
 
 function privateUserToUser(user: PrivateUser): User {
