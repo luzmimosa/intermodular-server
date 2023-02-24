@@ -90,10 +90,90 @@ accountRouter.post("/account/modify/:userid", async (req: any, res) => {
         user = userid;
 
     } else {
-        user = req.user;
+        res.status(403).json({ message: "NOT_ENOUGH_PERMISSIONS" });
+        return
     }
 
+    // Not critical information (displayName, biography, profilePicture)
+    const displayName       = req.body.displayName ?? undefined;
+    const biography         = req.body.biography ?? undefined;
+    const profilePicture    = req.body.profilePicture ?? undefined;
 
+    if (displayName) {
+        try {
+            await modifyUserData(user, "displayName", displayName)
+        } catch (e) {
+            res.status(400).json({ message: "INVALID_DISPLAY_NAME" });
+            return;
+        }
+    }
+    if (biography) {
+        try {
+            await modifyUserData(user, "biography", biography)
+        } catch (e) {
+            res.status(400).json({ message: "INVALID_BIOGRAPHY" });
+            return;
+        }
+    }
+    if (profilePicture) {
+        try {
+            await modifyUserData(user, "profilePicture", profilePicture)
+        } catch (e) {
+            res.status(400).json({ message: "INVALID_PROFILE_PICTURE" });
+            return;
+        }
+    }
+
+    // Critical information (username, email, password)
+    const username = req.body.username ?? undefined;
+    const email = req.body.email ?? undefined;
+    const password = req.body.password ?? undefined;
+
+    if (username || email || password) {
+        if (req.permission < RequestPermission.HIGH_SECURITY_USER) {
+            res.status(403).json({ message: "NOT_HIGH_SECURITY" });
+            return;
+        }
+
+        if (username) {
+            try {
+                await modifyUserData(user, "username", username)
+            } catch (e) {
+                res.status(400).json({ message: "INVALID_USERNAME" });
+                return;
+            }
+        }
+        if (email) {
+            try {
+                await modifyUserData(user, "email", email)
+            } catch (e) {
+                res.status(400).json({ message: "INVALID_EMAIL" });
+                return;
+            }
+        }
+        if (password) {
+            try {
+                await modifyUserData(user, "password", password)
+            } catch (e) {
+                res.status(400).json({ message: "INVALID_PASSWORD" });
+                return;
+            }
+        }
+    }
+
+    res.status(200).json({ message: "OK" });
+
+})
+
+accountRouter.post("/account/modify", async (req: any, res) => {
+
+    // User is logged in
+    if (!req.isLogged) {
+        res.status(403).json({ message: "NOT_LOGGED_IN" });
+        return;
+    }
+
+    let user = req.user
 
     // Not critical information (displayName, biography, profilePicture)
     const displayName       = req.body.displayName ?? undefined;
