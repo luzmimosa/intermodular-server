@@ -173,7 +173,7 @@ accountRouter.post("/account/modify", async (req: any, res) => {
         return;
     }
 
-    let user = req.user
+    let user = req.username
 
     // Not critical information (displayName, biography, profilePicture)
     const displayName       = req.body.displayName ?? undefined;
