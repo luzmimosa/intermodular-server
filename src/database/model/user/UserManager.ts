@@ -199,7 +199,7 @@ export async function modifyUserData(
     }
 
     // Save changes to database
-    await updateUser(user)
+    await updateUser(user, username)
 }
 
 export async function isAdmin(username: String) {
@@ -258,7 +258,7 @@ async function encryptPassword(password: string): Promise<string> {
     return await hash(password, 10);
 }
 
-async function updateUser(user: User) {
+async function updateUser(user: User, username: string = user.username) {
     // Save changes to database
-    await UserModel.updateOne({username: user.username}, user).exec();
+    await UserModel.updateOne({username: username}, user).exec();
 }
