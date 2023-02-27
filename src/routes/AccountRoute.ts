@@ -1,7 +1,7 @@
 import express from "express";
 import {registerUser} from "../auth/UserRegistrator";
 import {loginTokenByEmail, loginTokenByUsername, renewToken} from "../auth/UserAutenticator";
-import {modifyUserData} from "../database/model/user/UserManager";
+import {modifyUserData, userByUsername} from "../database/model/user/UserManager";
 import {RequestPermission} from "../Permissions";
 
 
@@ -94,6 +94,13 @@ accountRouter.post("/account/modify/:userid", async (req: any, res) => {
         return
     }
 
+    const userObject = await userByUsername(user);
+
+    if (!userObject) {
+        res.status(404).json({ message: "USER_DOES_NOT_EXIST" });
+        return;
+    }
+
     // Not critical information (displayName, biography, profilePicture)
     const displayName       = req.body.displayName ?? undefined;
     const biography         = req.body.biography ?? undefined;
@@ -136,11 +143,13 @@ accountRouter.post("/account/modify/:userid", async (req: any, res) => {
         }
 
         if (username) {
-            try {
-                await modifyUserData(user, "username", username)
-            } catch (e) {
-                res.status(400).json({ message: "INVALID_USERNAME" });
-                return;
+            if (username !== user) {
+                try {
+                    await modifyUserData(user, "username", username)
+                } catch (e) {
+                    res.status(400).json({message: "INVALID_USERNAME"});
+                    return;
+                }
             }
         }
         if (email) {
@@ -217,11 +226,13 @@ accountRouter.post("/account/modify", async (req: any, res) => {
         }
 
         if (username) {
-            try {
-                await modifyUserData(user, "username", username)
-            } catch (e) {
-                res.status(400).json({ message: "INVALID_USERNAME" });
-                return;
+            if (username !== user) {
+                try {
+                    await modifyUserData(user, "username", username)
+                } catch (e) {
+                    res.status(400).json({message: "INVALID_USERNAME"});
+                    return;
+                }
             }
         }
         if (email) {
